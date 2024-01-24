@@ -24,7 +24,7 @@ OBJ_starter = \
 
 ### COMPILE
 
-$(ODIR)/%.o: %.cpp  
+$(ODIR)/%.o: %.cpp scheduler.h 
 	g++ $< \
 	-c -o $@  $(INCS) $(CCflags)
 
