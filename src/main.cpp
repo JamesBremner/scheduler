@@ -13,14 +13,16 @@ main()
         cJob(
             "awake",
             "070000",
-            60));
+            59,
+            {"person"}));
     theScheduler.daily(
         cJob(
             "commute",
             "080000",
-            60));
+            60,
+            {"person"}));
 
     theScheduler.run();
-    
+
     return 0;
 }

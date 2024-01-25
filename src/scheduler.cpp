@@ -3,10 +3,12 @@
 cJob::cJob(
     const std::string &name,
     const std::string &hhmmss,
-    int durationMins)
+    int durationMins,
+    const std::vector<std::string> &resourcev)
     : myName(name),
       myDurationMins(durationMins),
-      myfstop(false)
+      myfstop(false),
+      myResourcev(resourcev)
 {
     start(hhmmss);
 }
@@ -45,8 +47,86 @@ bool cJob::operator<(const cJob &other) const
 {
     // ensure that the job with the earliest start time
     // is on the top of the priority queue
-    
+
     return myStart > other.myStart;
+}
+
+void cScheduler::daily(
+    const cJob &job)
+{
+    myJobv.push_back(job);
+    myQueue.push(job);
+    addNovelResources(job);
+}
+
+void cScheduler::addNovelResources(const cJob &job)
+{
+    std::vector<std::string> novel;
+    for (auto &rname : job.resources())
+    {
+        bool exists = false;
+        for (auto &r : myResourcev)
+        {
+            if (rname == r.name())
+            {
+                exists = true;
+                break;
+            }
+        }
+        if( ! exists )
+            novel.push_back(rname);
+    }
+    for (auto &rname : novel)
+        myResourcev.emplace_back(rname);
+}
+bool cScheduler::isResourceFree(
+    const cJob &job) const
+{
+    if( job.isStop() )
+        return true;
+
+    for (auto &r : myResourcev)
+    {
+        for (auto &req : job.resources())
+        {
+            if (r.name() == req)
+            {
+                if (!r.isFree())
+                {
+                    std::cout << "missing resource to start " << job.name() << "\n";
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+void cScheduler::allocate(const cJob &job)
+{
+    for (auto &r : myResourcev)
+    {
+        for (auto &req : job.resources())
+        {
+            if (r.name() == req)
+                r.allocate();
+        }
+    }
+}
+
+void cScheduler::free(const cJob &job)
+{
+    for (auto &req : job.resources())
+    {
+        for (auto &r : myResourcev)
+        {
+            if (r.name() == req)
+            {
+                r.free();
+                break;
+            }
+        }
+    }
 }
 
 void cScheduler::run()
@@ -65,6 +145,10 @@ void cScheduler::run()
         }
 
         cJob j = myQueue.top();
+        if (!isResourceFree(j))
+            exit(1);
+        allocate(j);
+
         myQueue.pop();
         std::cout << j.textOnStart();
 
@@ -72,6 +156,8 @@ void cScheduler::run()
         {
             j.makeStop();
             myQueue.push(j);
+        } else {
+            free( j );
         }
     }
 }
