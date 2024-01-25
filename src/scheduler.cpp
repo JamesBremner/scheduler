@@ -1,5 +1,16 @@
 #include "scheduler.h"
 
+    cJob::cJob(
+        const std::string &name,
+        const std::string &hhmmss,
+        int durationMins)
+        : myName(name),
+          myDurationMins(durationMins),
+          myfstop( false )
+    {
+        start( hhmmss);
+    }
+
 void cJob::start(const std::string &start)
 {
     myStart =
@@ -15,7 +26,7 @@ void cJob::start(const std::string &start)
 
 void cJob::makeStop()
 {
-    myName += "_stop";
+    myfstop = true;
     myStart += myDurationMins;
     
 }

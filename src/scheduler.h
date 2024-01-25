@@ -12,12 +12,7 @@ public:
     cJob(
         const std::string &name,
         const std::string &hhmmss,
-        int durationMins)
-        : myName(name),
-          myDurationMins(durationMins)
-    {
-        start( hhmmss);
-    }
+        int durationMins);
 
     void name(const std::string &name)
     {
@@ -29,7 +24,7 @@ public:
 
     bool isStop() const
     {
-        return ( myName.find("_stop") != -1 );
+        return myfstop;
     }
 
     bool operator<(const cJob &other) const
@@ -47,7 +42,9 @@ private:
     std::string myName;
     int myStart;
     int myDurationMins;
+    bool myfstop;
 };
+
 class cScheduler
 {
 public:
