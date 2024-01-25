@@ -27,16 +27,15 @@ public:
         return myfstop;
     }
 
-    bool operator<(const cJob &other) const
-    {
-        return myStart < other.myStart;
-    }
+    bool operator<(const cJob &other) const;
 
     std::string name() const
     {
         return myName;
     }
     std::string start() const;
+
+    std::string textOnStart() const;
 
 private:
     std::string myName;

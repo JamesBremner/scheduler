@@ -14,6 +14,13 @@ main()
             "awake",
             "070000",
             60));
+    theScheduler.daily(
+        cJob(
+            "commute",
+            "080000",
+            60));
+
     theScheduler.run();
+    
     return 0;
 }
